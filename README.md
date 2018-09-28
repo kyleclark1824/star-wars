@@ -1,6 +1,6 @@
-# React webpack starter template
+# React Star Wars API UI
 
-The aim of this repository is to provide a template for developing [React](https://facebook.github.io/react/) based applications using ES6 syntax and [webpack](https://webpack.github.io/) as a module bundler.
+This repository provides a front end for interacting with the Star Wars API (https://swapi.co/).
 
 ## Features
 
@@ -22,5 +22,3 @@ The aim of this repository is to provide a template for developing [React](https
 * Run `npm run test:ci` to watch the `src` directory for changes and run the tests
 
 ## MISC
-
-* [A modern React starter pack based on webpack](http://krasimirtsonev.com/blog/article/a-modern-react-starter-pack-based-on-webpack)
