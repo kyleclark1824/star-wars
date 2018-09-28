@@ -1,25 +1,21 @@
+
+import axios from 'axios';
+
 var rest = {
-    MakeCustSearchRequest
+    MakeCustSearchRequest,
+    MakeDetailsRequests
 }
 
 function MakeCustSearchRequest(data) {
-	return new Promise(function(resolve, reject) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', `https://swapi.co/api/people/?search=${data}`, true);
-		xhr.onreadystatechange = function()
-		{
-			if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200)
-			{
-				resolve(JSON.parse(xhr.responseText));
-                // resolve(xhr.responseText);
-			}
-			else if (xhr.readyState == XMLHttpRequest.DONE && xhr.status != 200)
-			{
-				reject(xhr.status + '');
-			}
-		};
-		xhr.send();
-	});
+    return axios.get(`https://swapi.co/api/people/?search=${data}`)
+        .then(response => response.data);
+}
+
+function MakeDetailsRequests(info) {
+    // NEED TO MAKE ALL CALLS TO GET ADDITIONAL DETAILS!!
+    console.log("INfo in details:", info);
+    return axios.get(`https://swapi.co/api/people/?search=${1}`)
+        .then(response => info);
 }
 
 module.exports = rest;

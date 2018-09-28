@@ -29,9 +29,14 @@ class Comp extends Component {
         var that = this;
         if (event.target){
             rest.MakeCustSearchRequest(event.target.value).then(data => {
-                console.log(data);
+                console.log("data",data);
                 that.setState({ data: data.results });
             });
+        }
+    }
+    getDetails(info) {
+        if(info) {
+            return rest.MakeDetailsRequests(info);
         }
     }
     render() {
@@ -51,7 +56,7 @@ class Comp extends Component {
                     </div>
                     <CharSearch state={this.state} custSearch={this.custSearch.bind(this)}/>
                     <div>
-                        <CharacterTable state={this.state} updateState={this.updateState.bind(this)}/>
+                        <CharacterTable state={this.state} updateState={this.updateState.bind(this)} getDetails={this.getDetails.bind(this)}/>
                     </div>
                 </div>
                 <div style={displayObj.showDetails}>
@@ -66,12 +71,16 @@ class Details extends Component {
     constructor(props) {
         super(props);
         this.goBack = this.goBack.bind(this);
+        this.state = {
+            info: {}
+        };
     }
     goBack(state) {
         this.props.updateState({showDetails: false})
     }
+
     render() {
-        var info = this.props.state ? this.props.state.selected.info : {};
+        var info = this.props.state.selected.info || {};
         return (
             <div>
                 <div>
@@ -136,13 +145,17 @@ class CharacterTable extends Component {
                         if (typeof rowInfo !== "undefined") {
                             return {
                                 onClick: (e) => {
-                                    this.updateState({
-                                        selected: {
-                                            index:rowInfo.index,
-                                            info: rowInfo.original
-                                        },
-                                        showDetails: true
-                                    });
+                                    this.props.getDetails(rowInfo.original)
+                                        .then(details => {
+                                            console.log("got details page details: ", details);
+                                            this.updateState({
+                                                selected: {
+                                                    index:rowInfo.index,
+                                                    info: details
+                                                },
+                                                showDetails: true
+                                            });
+                                        });
                                 },
                                 style: {
                                     background:
