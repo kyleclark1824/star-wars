@@ -93,8 +93,12 @@ class Details extends Component {
                 </div>
                 <ListGroup>
                     <ListGroupItem>Gender: {info.gender}</ListGroupItem>
-                    <ListGroupItem>Birth Year: {info.birth_year}</ListGroupItem>
+                    <ListGroupItem>Species: {(info.species || {}).name}</ListGroupItem>
+                    <ListGroupItem> Films: 
+                        <ListGroup>{info.films ? info.films.map((film, index) => (<ListGroupItem>{film.data.title}</ListGroupItem>)) : 'None'}</ListGroup>
+                    </ListGroupItem>
                 </ListGroup>
+
             </div>
         );
     }

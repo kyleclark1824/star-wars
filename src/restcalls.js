@@ -14,8 +14,30 @@ function MakeCustSearchRequest(data) {
 function MakeDetailsRequests(info) {
     // NEED TO MAKE ALL CALLS TO GET ADDITIONAL DETAILS!!
     console.log("INfo in details:", info);
-    return axios.get(`https://swapi.co/api/people/?search=${1}`)
-        .then(response => info);
+    var returnObj = info;
+    return Promise.resolve()
+        .then( function() {
+            if (info.species) {
+                return axios.get(info.species[0])
+            }
+        })
+        .then(species => {
+            console.log("species:", species);
+            returnObj.species = species.data
+            if (info.films.length) {
+                let promiseArray = info.films.map(url => axios.get(url));
+                return axios.all(promiseArray)
+            }
+        })
+        .then(films => {
+            console.log("films:", films);
+            var filmArray = [];
+            films.forEach(film => {
+                filmArray.push(film);
+            });
+            returnObj.films = filmArray;
+            return returnObj;
+        })
 }
 
 module.exports = rest;
