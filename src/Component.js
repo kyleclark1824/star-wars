@@ -27,9 +27,12 @@ class Comp extends Component {
     }
     custSearch(event) {
         var that = this;
-        if (event.target){
+        if (event && event.target){
             rest.MakeCustSearchRequest(event.target.value).then(data => {
-                console.log("data",data);
+                that.setState({ data: data.results });
+            });
+        } else {
+            rest.MakeCustSearchRequest('').then(data => {
                 that.setState({ data: data.results });
             });
         }
@@ -94,7 +97,7 @@ class Details extends Component {
                 <ListGroup>
                     <ListGroupItem>Gender: {info.gender}</ListGroupItem>
                     <ListGroupItem>Species: {(info.species || {}).name}</ListGroupItem>
-                    <ListGroupItem> Films: 
+                    <ListGroupItem> Films:
                         <ListGroup>{info.films ? info.films.map((film, index) => (<ListGroupItem>{film.data.title}</ListGroupItem>)) : 'None'}</ListGroup>
                     </ListGroupItem>
                 </ListGroup>
@@ -111,6 +114,9 @@ class CharSearch extends Component {
     }
     onChange(event) {
         this.props.custSearch(event)
+    }
+    componentDidMount() {
+        this.props.custSearch();
     }
     render() {
         return (
