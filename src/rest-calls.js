@@ -6,8 +6,11 @@ var rest = {
     MakeDetailsRequests
 }
 
-function MakeCustSearchRequest(data) {
-    return axios.get(`https://swapi.co/api/people/?search=${data}`)
+function MakeCustSearchRequest(data, url) {
+    console.log(data, url ? "has" : "doens't");
+    var requestUrl = url ? url : `https://swapi.co/api/people/?search=${data}`;
+    console.log("request: ", requestUrl);
+    return axios.get(requestUrl)
         .then(response => response.data);
 }
 
@@ -22,7 +25,6 @@ function MakeDetailsRequests(info) {
             }
         })
         .then(species => {
-            console.log("species:", species);
             returnObj.species = species.data
             if (info.films.length) {
                 let promiseArray = info.films.map(url => axios.get(url));
@@ -30,7 +32,6 @@ function MakeDetailsRequests(info) {
             }
         })
         .then(films => {
-            console.log("films:", films);
             var filmArray = [];
             films.forEach(film => {
                 filmArray.push(film);

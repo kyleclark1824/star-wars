@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import ReactTable from "react-table";
+import ReactTable from "react-table/lib";
 import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import styles from 'main.css';
 import rest from 'rest-calls.js';
@@ -9,7 +9,13 @@ class StarWars extends Component {
     constructor() {
         super();
         this.state = {
-            data: [],
+            table: {
+                data: [],
+                loading: false,
+                pages: 0,
+                next: null,
+                previous: null
+            },
             selected: {
                 index: -1,
                 info: {}
@@ -29,11 +35,28 @@ class StarWars extends Component {
         var that = this;
         if (event && event.target){
             rest.MakeCustSearchRequest(event.target.value).then(data => {
-                that.setState({ data: data.results });
+                that.setState({
+                    table: {
+                        data: data.results,
+                        loading: false,
+                        pages: (Math.ceil(data.count/10)),
+                        previous: data.previous,
+                        next: data.next
+                    }
+                });
             });
         } else {
             rest.MakeCustSearchRequest('').then(data => {
-                that.setState({ data: data.results });
+                that.setState({
+                    table: {
+                        data: data.results,
+                        loading: false,
+                        pages: (Math.ceil(data.count/10)),
+                        previous: data.previous,
+                        next: data.next
+                    }
+                });
+                console.log(that.state);
             });
         }
     }
@@ -55,7 +78,7 @@ class StarWars extends Component {
             <div>
                 <div style={displayObj.showTable}>
                     <div>
-                        <h1>Welcome to the Star Wars Character search!</h1>
+                        <h1 className={styles.searchInput}>Welcome to the Star Wars Character search!</h1>
                     </div>
                     <CharSearch state={this.state} custSearch={this.custSearch.bind(this)}/>
                     <div>
@@ -115,8 +138,11 @@ class Details extends Component {
                                     accessor: "data.director"
                                 }
                             ]}
-                            defaultPageSize={5}
+                            pageSize={info.films ? info.films.length : 0}
                             className="-striped -highlight"
+                            showPagination={true}
+                            showPaginationTop={false}
+                            showPaginationBottom={false}
                         />
                     </ListGroupItem>
                 </ListGroup>
@@ -135,7 +161,7 @@ class CharSearch extends Component {
         this.props.custSearch(event)
     }
     componentDidMount() {
-        this.props.custSearch();
+        this.props.custSearch('');
     }
     render() {
         return (
@@ -157,10 +183,11 @@ class CharacterTable extends Component {
     }
 
     render() {
+        const { data, pages, loading } = this.props.state.table;
         return (
             <div>
                 <ReactTable
-                    data={this.props.state.data}
+                    data={data}
                     columns={[
                         {
                             Header: "Name",
@@ -198,6 +225,26 @@ class CharacterTable extends Component {
                         } else {
                             return {};
                         }
+                    }}
+                    loading={this.props.state.table.loading}
+                    showPagination={true}
+                    showPaginationTop={false}
+                    showPaginationBottom={true}
+                    manual
+                    pages={pages}
+                    loading={loading}
+                    pageSizeOptions={[10]}
+                    onFetchData={(state, instance) => {
+                        var that = this;
+                        if (this.props.state.table.data.length) {
+                            rest.MakeCustSearchRequest(null, this.props.state.table.next).then(data => {
+                                console.log("data:", data);
+                                that.updateState({ table:{ data:data.results, loading: false, pages: Math.ceil(data.count/10), next: data.next, previous: data.previous}});
+                            });
+                        } else {
+                            return;
+                        }
+
                     }}
                 />
             </div>
