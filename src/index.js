@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Comp from './Component';
+import StarWars from './main.js';
 
 window.onload = () => {
   ReactDOM.render(
-    <Comp />,
+    <StarWars />,
     document.querySelector('#container')
   );
 };
